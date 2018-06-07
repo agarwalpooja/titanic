@@ -77,5 +77,55 @@ plt.figure();df.plot(kind='bar').set_title('Not Survived passengers by Pclass')
 #2.3.4 Plotting histogram of survived by Age
 plt.figure()
 td_survived.Age.hist()
-df = td_not_survived.groupby('Pclass').size()
-plt.figure();df.plot(kind='bar').set_title('Not Survived passengers by Pclass')
+plt.figure()
+plt.suptitle("Passengers Age distribution",x=0.5, y=1.05, ha='center', fontsize='xx-large')
+pl1 = training_data.Age.hist()
+pl1.set_xlabel("Age")
+pl1.set_ylabel("Count")
+
+df_children = training_data.loc[(training_data['Age']>=0) & (training_data['Age']<=15)]
+df_y_adults = training_data.loc[(training_data['Age'] >15)].loc[(training_data['Age']<=30 )]
+df_adults = training_data.loc[(training_data['Age'] >30)].loc[(training_data['Age']<=60 )]
+df_old = training_data.loc[(training_data['Age'] >60)]
+
+
+plt.figure()
+df1 = df_children.groupby('Survived').size() # with .size() we generate a pandas pandas.core.series.Series Series type variable
+plt.subplot(2,2,1)
+df1.plot(kind='bar').set_title('Children') 
+df2 = df_y_adults.groupby('Survived').size() # with .size() we generate a pandas  pandas.core.series.Series Series type variable
+plt.subplot(2,2,2)
+df2.plot(kind='bar').set_title('young Adults')
+df3 = df_adults.groupby('Survived').size() # with .size() we generate a pandas pandas.core.series.Series Series type variable
+plt.subplot(2,2,3)
+df3.plot(kind='bar').set_title('Adults')
+df4 = df_old.groupby('Survived').size() # with .size() we generate a pandas pandas.core.series.Series Series type variable
+plt.subplot(2,2,4)
+df4.plot(kind='bar').set_title('old')
+
+f,ax = plt.subplots(2,2,figsize=(10,10))
+sns.countplot('Survived',data=df_children,ax=ax[0,0])
+sns.countplot('Survived',data=df_y_adults,ax=ax[0,1])
+sns.countplot('Survived',data=df_adults,ax=ax[1,0])
+sns.countplot('Survived',data=df_old,ax=ax[1,1])
+
+ax[0,0].set_title('Survival Rate by children')
+ax[0,1].set_title('Survival Rate by young adults')
+ax[1,0].set_title('Survival Rate by adults')
+ax[1,1].set_title('Survival Rate by old')
+
+#analysing data
+df_full = pd.concat([training_data,testing_data], sort=True) # axis : {0/’index’, 1/’columns’}, default 0 The axis to concatenate along (by index)
+num_all = len(df_full.index)
+''' number of records of training data'''
+num_train = len(training_data.index)
+''' number of records of testing data'''
+num_test = len(testing_data.index)
+d = {'full' : num_all, 'train' : num_train, 'test' : num_test}
+number_records = pd.Series(d)
+
+number_records.head()
+
+df_sum_null = df_full.isnull().sum().sort_values(ascending=False) # output pandas.core.series.Series
+#df=df_sum_null.unstack() ==> does not work
+plt.figure();df_sum_null.plot(kind='barh') # showing a horizontal bar plot 
